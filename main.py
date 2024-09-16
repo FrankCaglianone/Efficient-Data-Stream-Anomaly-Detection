@@ -88,7 +88,7 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, index, data_buffe
         # Clear the buffer after processing
         data_buffer = data_buffer[step_size:]
 
-    return anomaly_indices
+    return anomaly_indices, data_buffer
 
 
 
@@ -109,8 +109,11 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, index, data_buffe
 
 
 
+def parallel_anomaly_detection(data_stream):
+    # Variables
+    buffer_size = 50
+    window_size = 10
 
-def parallel_anomaly_detection(data_stream, window_size,):
     # Create fixed-size window for rolling Z-Score
     window = deque(maxlen=window_size)
 
@@ -118,6 +121,7 @@ def parallel_anomaly_detection(data_stream, window_size,):
     data_buffer = []
     iso_forest = IsolationForest(contamination=0.1, random_state=42)
 
+    # Anomalies
     z_score_anomalies = []
     iso_anomalies = []
 
@@ -128,13 +132,17 @@ def parallel_anomaly_detection(data_stream, window_size,):
             z_score_anomalies.append(z_tmp)
 
         
-        iso_tmp = isolation_forest_anomaly_detection(iso_forest=iso_forest, data_point=data_point, index =index, data_buffer=data_buffer, buffer_size=10, step_size=10)    #TODO: buffer size = 50
+        iso_tmp, data_buffer = isolation_forest_anomaly_detection(iso_forest=iso_forest, data_point=data_point, index =index, data_buffer=data_buffer, buffer_size=buffer_size, step_size=10)
         if iso_tmp:
             iso_anomalies.extend(iso_tmp)
+        # Fit the Isolation Forest model periodically
+        if len(data_buffer) == buffer_size:
+            iso_forest.fit(data_buffer)
 
 
+    print('\n\n')
     print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
-    print("Anomalies found at indices:", iso_anomalies)
+    print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
 
 
 
@@ -142,10 +150,10 @@ def parallel_anomaly_detection(data_stream, window_size,):
 
 
 # Create the data stream generator
-data_stream = data_stream_generator(50)
+data_stream = data_stream_generator(500)
 
 # Run the parallel anomaly detection
-parallel_anomaly_detection(data_stream, window_size=10,)
+parallel_anomaly_detection(data_stream)
 
 
 
