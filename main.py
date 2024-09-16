@@ -47,7 +47,7 @@ def data_stream_generator(max_data_points):
 
 
 
-def rolling_z_score(data_stream, window_size, z_threshold, num_points):
+def rolling_z_score_anomaly_detection(data_stream, window_size, z_threshold):
     """
     Calculate the rolling z-score for a real-time data stream.
     
@@ -86,22 +86,17 @@ def rolling_z_score(data_stream, window_size, z_threshold, num_points):
                 z_score = (data_point - mean) / std_dev
             
             z_scores.append(z_score)
-            print(f"Index: {i}, Data point: {data_point}, Rolling mean: {mean}, Std dev: {std_dev}, Z-score: {z_score}")
+            # print(f"Index: {i}, Data point: {data_point}, Rolling mean: {mean}, Std dev: {std_dev}, Z-score: {z_score}")
 
             # Check if z-score exceeds the threshold (absolute value)
             if abs(z_score) > z_threshold:
-                print(f"\n Anomaly detected at index {i}: z_score = {z_score}\n")
+                # print(f"\n Anomaly detected at index {i}: z_score = {z_score}\n")
                 anomalies.append(i)  # Index of the anomaly for plotting
             
             # print('\n')
 
         else:
             z_scores.append(None)  # Not enough data points yet
-
-
-        # Stop after processing the desired number of points
-        if i >= num_points - 1:
-            break
     
     return data_points, z_scores, anomalies, rolling_means, rolling_stds
 
@@ -113,105 +108,9 @@ def rolling_z_score(data_stream, window_size, z_threshold, num_points):
 
 
 
-# # Function to process data in chunks using Isolation Forest
-# def isolation_forest_detection(data_stream, chunk_size, contamination=0.02):
-#     """
-#     Processes the data stream in chunks and applies Isolation Forest for anomaly detection.
-    
-#     :param max_data_points: Total number of data points to process.
-#     :param chunk_size: Size of each chunk of data to fit the Isolation Forest model.
-#     :param contamination: Proportion of the dataset to be considered as outliers.
-#     """
-#     # Create Isolation Forest model
-#     model = IsolationForest(contamination=contamination, random_state=42)
-    
-#     # Initialize data storage
-#     data_chunk = []
-
-#     # Counters for anomalies detected
-#     total_anomalies_detected = 0
-
-#     for data_point in data_stream:
-#         # Append the new data point to the chunk
-#         data_chunk.append([data_point])
-
-#         # When the chunk is full, fit the model and detect anomalies
-#         if len(data_chunk) == chunk_size:
-#             # Convert to DataFrame
-#             df = pd.DataFrame(data_chunk)
-            
-#             # Fit the model and predict
-#             model.fit(df)
-#             df['anomaly'] = model.predict(df)
-            
-#             # Count anomalies
-#             anomalies_in_chunk = df[df['anomaly'] == -1]
-#             normal_data_in_chunk = df[df['anomaly'] == 1]
-
-#             total_anomalies_detected += len(anomalies_in_chunk)
-
-#             print(f"Processed {chunk_size} data points: {len(anomalies_in_chunk)} anomalies detected in this chunk")
-
-#             # Reset the chunk for the next set of data points
-#             data_chunk = []
-
-#     print(f"Total anomalies detected: {total_anomalies_detected}")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Create the data stream generator
-data_stream = data_stream_generator(500)
-
-
-
-# Detect anomalies with Rolling Z-Score
-# window_size = 10  # You can adjust the window size here
-# z_threshold = 2  # Z-score threshold for anomaly detection
-# num_points = 50  # Number of points to process and plot
-# data_points, z_scores, anomalies, rolling_means, rolling_stds = rolling_z_score(stream, window_size, z_threshold, num_points)
-# print(anomalies)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def detect_anomalies_in_stream(data_stream, buffer_size, step_size):
+def isolation_forest_anomaly_detection(data_stream, buffer_size, step_size):
     anomaly_indices = []
     data_buffer = []
 
@@ -244,13 +143,6 @@ def detect_anomalies_in_stream(data_stream, buffer_size, step_size):
 
 
 
-# Call the function to detect anomalies in the stream
-#* NoteSliding Window: Instead of clearing the entire buffer after each detection round, we now implement a sliding window approach by keeping most of the buffer (removing only step_size points) to preserve the recent history of the data stream.
-anomaly_indices = detect_anomalies_in_stream(data_stream=data_stream, buffer_size=50, step_size=10)
-
-
-print('\n\n\n')
-print("Anomalies found at indices:", anomaly_indices)
 
 
 
@@ -268,20 +160,22 @@ print("Anomalies found at indices:", anomaly_indices)
 
 
 
+# Create the data stream generator
+data_stream = data_stream_generator(50)
+
+
+
+# Detect anomalies with Rolling Z-Score
+data_points, z_scores, z_score_anomalies, rolling_means, rolling_stds = rolling_z_score_anomaly_detection(data_stream=data_stream, window_size=10, z_threshold=2)
+print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
 
 
 
 
+# Detect anomalies with Isolation Forest
+# iso_anomalies = isolation_forest_anomaly_detection(data_stream=data_stream, buffer_size=50, step_size=10)
+# print("Anomalies found at indices:", iso_anomalies)
 
-
-
-
-
-
-
-
-# Run the data stream processing with Isolation Forest
-# isolation_forest_detection(stream, chunk_size=10)
 
 
 
@@ -292,7 +186,7 @@ print("Anomalies found at indices:", anomaly_indices)
 
 
 
-
+#* NoteSliding Window: Instead of clearing the entire buffer after each detection round, we now implement a sliding window approach by keeping most of the buffer (removing only step_size points) to preserve the recent history of the data stream.
 
 
 
