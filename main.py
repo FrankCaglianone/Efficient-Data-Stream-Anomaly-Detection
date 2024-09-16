@@ -171,16 +171,15 @@ print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
 
 
 
-
 # Detect anomalies with Isolation Forest
-# iso_anomalies = isolation_forest_anomaly_detection(data_stream=data_stream, buffer_size=50, step_size=10)
-# print("Anomalies found at indices:", iso_anomalies)
+iso_anomalies = isolation_forest_anomaly_detection(data_stream=data_stream, buffer_size=50, step_size=10)
+print("Anomalies found at indices:", iso_anomalies)
 
 
 
 
 
-# # Plot the results
+# Plot the results
 # plot_anomalies(data_points, anomalies)
 
 
