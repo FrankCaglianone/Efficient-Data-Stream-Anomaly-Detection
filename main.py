@@ -1,13 +1,18 @@
 import numpy as np
+from sklearn.ensemble import IsolationForest
+import pandas as pd
 import time
 import random
 from collections import deque
-import matplotlib.pyplot as plt
 
+
+
+
+
+# TODO: delete return count in data stream generator
 
 
 # Data stream generator function
-
 def data_stream_generator(max_data_points):
     """
     A generator function that continuously yields real-time floating-point numbers.
@@ -23,10 +28,10 @@ def data_stream_generator(max_data_points):
         # Introduce random anomalies occasionally
         if random.random() < 0.1:  # 0.1 = 10% chance of anomaly
             data_point += random.uniform(15, 20)  # Spike anomaly
-            print(f"Anomaly introduced: {data_point}")
+            print(f"Anomaly introduced at {count} --> {data_point}")
             n += 1
-        else:
-            print(f"Normal point: {data_point}")
+        # else:
+        #     print(f"Normal point at {count} --> {data_point}")
 
         yield data_point
         
@@ -36,34 +41,6 @@ def data_stream_generator(max_data_points):
         count += 1
 
     return n  # Return number of anomalies detected when finished
-
-
-
-
-# def data_stream_generator():
-#     """
-#     A generator function that continuously yields real-time floating-point numbers.
-#     Simulates a real-time data stream.
-#     """
-
-#     n = 0
-#     while True:
-#         # Simulate a real-time data point (normal distribution with occasional spikes)
-#         data_point = random.gauss(0, 1)  # Mean = 0, Standard Deviation = 1
-
-#         # Introduce random anomalies occasionally
-#         if random.random() < 0.1:  # 0.01 = 1% chance of anomaly
-#             data_point += random.uniform(15, 20)  # Spike anomaly (old = 5, 10)
-#             print(f"Anomaly introduced: {data_point}")
-#             n += 1
-#         else:
-#             print(f"Normal point: {data_point}")
-
-#         yield data_point
-        
-#         # Simulate real-time delay
-#         time.sleep(0.9)  # 100ms delay between data points (adjust as needed)
-
 
 
 
@@ -109,11 +86,11 @@ def rolling_z_score(data_stream, window_size, z_threshold, num_points):
                 z_score = (data_point - mean) / std_dev
             
             z_scores.append(z_score)
-            # print(f"Index: {i}, Data point: {data_point}, Rolling mean: {mean}, Std dev: {std_dev}, Z-score: {z_score}")
+            print(f"Index: {i}, Data point: {data_point}, Rolling mean: {mean}, Std dev: {std_dev}, Z-score: {z_score}")
 
             # Check if z-score exceeds the threshold (absolute value)
             if abs(z_score) > z_threshold:
-                # print(f"Anomaly detected at index {i}: z_score = {z_score}")
+                print(f"\n Anomaly detected at index {i}: z_score = {z_score}\n")
                 anomalies.append(i)  # Index of the anomaly for plotting
             
             # print('\n')
@@ -136,80 +113,181 @@ def rolling_z_score(data_stream, window_size, z_threshold, num_points):
 
 
 
-
-# Function to plot the data points and anomalies
-def plot_anomalies(data_points, anomalies):
-    """
-    Plots data points and highlights anomalies based on z-scores.
+# # Function to process data in chunks using Isolation Forest
+# def isolation_forest_detection(data_stream, chunk_size, contamination=0.02):
+#     """
+#     Processes the data stream in chunks and applies Isolation Forest for anomaly detection.
     
-    Args:
-        data_points: List of data points.
-        z_scores: List of rolling z-scores (use None for incomplete rolling windows).
-        anomalies: List of indices where anomalies were detected.
-        z_threshold: Z-score threshold used for anomaly detection (default is 3).
-    """
-    z_threshold = 3
-
-    plt.figure(figsize=(10, 6))
+#     :param max_data_points: Total number of data points to process.
+#     :param chunk_size: Size of each chunk of data to fit the Isolation Forest model.
+#     :param contamination: Proportion of the dataset to be considered as outliers.
+#     """
+#     # Create Isolation Forest model
+#     model = IsolationForest(contamination=contamination, random_state=42)
     
-    # Plot data points
-    plt.plot(data_points, label='Data Points', color='blue', alpha=0.7)
-    
-    # Plot anomalies (if any)
-    if anomalies:
-        anomaly_points = [data_points[i] for i in anomalies]
-        plt.scatter(anomalies, anomaly_points, color='red', label='Anomalies', zorder=5)
-    
-    # Plot z-score threshold lines
-    plt.axhline(y=z_threshold, color='green', linestyle='--', label=f'Z-Score Threshold (+{z_threshold})')
-    plt.axhline(y=-z_threshold, color='green', linestyle='--', label=f'Z-Score Threshold (-{z_threshold})')
-        
+#     # Initialize data storage
+#     data_chunk = []
 
-    # Add labels and title
-    plt.title(f'Anomaly Detection using Rolling Z-Score (Z-Score Threshold: {z_threshold})')
-    plt.xlabel('Data Points')
-    plt.ylabel('Value')
-    plt.legend()
-    plt.grid(True)
-    
-    # Display the plot
-    plt.show()
+#     # Counters for anomalies detected
+#     total_anomalies_detected = 0
 
+#     for data_point in data_stream:
+#         # Append the new data point to the chunk
+#         data_chunk.append([data_point])
 
+#         # When the chunk is full, fit the model and detect anomalies
+#         if len(data_chunk) == chunk_size:
+#             # Convert to DataFrame
+#             df = pd.DataFrame(data_chunk)
+            
+#             # Fit the model and predict
+#             model.fit(df)
+#             df['anomaly'] = model.predict(df)
+            
+#             # Count anomalies
+#             anomalies_in_chunk = df[df['anomaly'] == -1]
+#             normal_data_in_chunk = df[df['anomaly'] == 1]
 
+#             total_anomalies_detected += len(anomalies_in_chunk)
 
+#             print(f"Processed {chunk_size} data points: {len(anomalies_in_chunk)} anomalies detected in this chunk")
 
+#             # Reset the chunk for the next set of data points
+#             data_chunk = []
 
-
-
-
-
-
+#     print(f"Total anomalies detected: {total_anomalies_detected}")
 
 
 
-# Example Usage
-window_size = 10  # You can adjust the window size here
-z_threshold = 2  # Z-score threshold for anomaly detection
-num_points = 50  # Number of points to process and plot
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Create the data stream generator
-stream = data_stream_generator(num_points)
-print(stream)
-
-# Detect anomalies and calculate z-scores
-data_points, z_scores, anomalies, rolling_means, rolling_stds = rolling_z_score(stream, window_size, z_threshold, num_points)
+data_stream = data_stream_generator(500)
 
 
 
+# Detect anomalies with Rolling Z-Score
+# window_size = 10  # You can adjust the window size here
+# z_threshold = 2  # Z-score threshold for anomaly detection
+# num_points = 50  # Number of points to process and plot
+# data_points, z_scores, anomalies, rolling_means, rolling_stds = rolling_z_score(stream, window_size, z_threshold, num_points)
+# print(anomalies)
 
-print(anomalies)
-
-# Plot the results
-plot_anomalies(data_points, anomalies)
 
 
 
+
+
+
+
+
+
+
+
+
+
+def detect_anomalies_in_stream(data_stream, buffer_size, step_size):
+    anomaly_indices = []
+    data_buffer = []
+
+    # Initialize Isolation Forest model
+    iso_forest = IsolationForest(contamination=0.1, random_state=42)
+
+    for index, data_point in enumerate(data_stream):  # Simulate 100 points
+        data_buffer.append([data_point])  # Add new data point to the buffer
+
+        # Check if buffer is full
+        if len(data_buffer) >= buffer_size:
+            # Apply Isolation Forest to detect anomalies in the buffer
+            iso_forest.fit(data_buffer)  # Fit the model to the buffer
+            anomaly_labels = iso_forest.predict(data_buffer)  # Predict anomalies
+
+            # Find indices of anomalies in the current buffer
+            anomalies = np.where(anomaly_labels == -1)[0]
+            anomaly_indices.extend(anomalies + (index - buffer_size + 1))  # Adjust indices
+
+            # Clear the buffer after processing
+            data_buffer = data_buffer[step_size:]
+
+    return anomaly_indices
+
+
+
+
+
+
+
+
+
+# Call the function to detect anomalies in the stream
+#* NoteSliding Window: Instead of clearing the entire buffer after each detection round, we now implement a sliding window approach by keeping most of the buffer (removing only step_size points) to preserve the recent history of the data stream.
+anomaly_indices = detect_anomalies_in_stream(data_stream=data_stream, buffer_size=50, step_size=10)
+
+
+print('\n\n\n')
+print("Anomalies found at indices:", anomaly_indices)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Run the data stream processing with Isolation Forest
+# isolation_forest_detection(stream, chunk_size=10)
+
+
+
+
+# # Plot the results
+# plot_anomalies(data_points, anomalies)
 
 
 
