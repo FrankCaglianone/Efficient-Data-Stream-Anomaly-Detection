@@ -17,7 +17,7 @@ def data_stream_generator(max_data_points):
         data_point = random.gauss(0, 1)  # Mean = 0, Standard Deviation = 1
 
         # Introduce random anomalies occasionally
-        if random.random() < 0.1:  # 0.1 = 10% chance of anomaly
+        if count >= 10 and random.random() < 0.1:  # 0.1 = 10% chance of anomaly
             data_point += random.uniform(15, 20)  # Spike anomaly
             print(f"Anomaly introduced at {count} --> {data_point}")
         # else:
@@ -119,7 +119,7 @@ def parallel_anomaly_detection(data_stream):
 
     # Buffer for Isolation Forest
     data_buffer = []
-    iso_forest = IsolationForest(contamination=0.1, random_state=42)
+    iso_forest = IsolationForest(contamination=0.08, random_state=42)
 
     # Anomalies
     z_score_anomalies = []
@@ -141,8 +141,26 @@ def parallel_anomaly_detection(data_stream):
 
 
     print('\n\n')
-    print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
-    print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
+    # print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
+    # print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
+
+    # combined_anomalies = set(z_score_anomalies) & set(iso_anomalies)
+    # print("All detected anomalies:", combined_anomalies)
+
+    # Combining anomalies using union instead of intersection
+    combined_anomalies = set(z_score_anomalies) | set(iso_anomalies)
+
+    # Additional filter: If the anomaly is only detected by one method, check if it is near another anomaly
+    # TODO: Anomaly Clustering
+    final_anomalies = set()
+    for anomaly in combined_anomalies:
+        # If an anomaly is detected by both methods, add immediately.
+        if anomaly in z_score_anomalies and anomaly in iso_anomalies:
+            final_anomalies.add(anomaly)
+        elif any(abs(anomaly - a) <= 5 for a in combined_anomalies if a != anomaly):
+            final_anomalies.add(anomaly)
+
+    print("Filtered combined anomalies:", final_anomalies)
 
 
 
