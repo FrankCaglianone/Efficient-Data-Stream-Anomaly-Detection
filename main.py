@@ -1,24 +1,17 @@
-import numpy as np
-from sklearn.ensemble import IsolationForest
-import pandas as pd
 import time
 import random
+import numpy as np
+from sklearn.ensemble import IsolationForest
 from collections import deque
 
 
 
 
 
-# TODO: delete return count in data stream generator
 
 
 # Data stream generator function
 def data_stream_generator(max_data_points):
-    """
-    A generator function that continuously yields real-time floating-point numbers.
-    Simulates a real-time data stream. Stops after 'max_data_points' are generated.
-    """
-    n = 0  # Count of anomalies
     count = 0  # Counter to stop after max_data_points
 
     while count < max_data_points:
@@ -29,7 +22,6 @@ def data_stream_generator(max_data_points):
         if random.random() < 0.1:  # 0.1 = 10% chance of anomaly
             data_point += random.uniform(15, 20)  # Spike anomaly
             print(f"Anomaly introduced at {count} --> {data_point}")
-            n += 1
         # else:
         #     print(f"Normal point at {count} --> {data_point}")
 
@@ -40,24 +32,12 @@ def data_stream_generator(max_data_points):
         
         count += 1
 
-    return n  # Return number of anomalies detected when finished
-
 
 
 
 
 
 def rolling_z_score_anomaly_detection(data_stream, window_size, z_threshold):
-    """
-    Calculate the rolling z-score for a real-time data stream.
-    
-    Args:
-        data_stream: A generator that yields floating-point numbers.
-        window_size: The size of the rolling window.
-    
-    Yields:
-        A tuple of (data_point, z_score) for each new data point.
-    """
     window = deque(maxlen=window_size)  # Fixed-size window to store data points
     data_points = []
     z_scores = []
