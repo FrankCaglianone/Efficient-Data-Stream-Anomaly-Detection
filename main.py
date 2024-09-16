@@ -8,8 +8,6 @@ from collections import deque
 
 
 
-
-
 # Data stream generator function
 def data_stream_generator(max_data_points):
     count = 0  # Counter to stop after max_data_points
@@ -22,8 +20,8 @@ def data_stream_generator(max_data_points):
         if random.random() < 0.1:  # 0.1 = 10% chance of anomaly
             data_point += random.uniform(15, 20)  # Spike anomaly
             print(f"Anomaly introduced at {count} --> {data_point}")
-        else:
-            print(f"Normal point at {count} --> {data_point}")
+        # else:
+        #     print(f"Normal point at {count} --> {data_point}")
 
         yield data_point
         
@@ -38,48 +36,29 @@ def data_stream_generator(max_data_points):
 
 
 def rolling_z_score_anomaly_detection(data_point, index, window, window_size, z_threshold):
-    
-    # data_points = []
-    z_scores = []
-    anomalies = []
-    # rolling_means = []
-    # rolling_stds = []
-    
-    # for i, data_point in enumerate(data_stream):
-
     # Append new data point to the window
     window.append(data_point)
-    # data_points.append(data_point)
 
-    
     if len(window) == window_size:
         # Calculate mean and standard deviation of the window
         mean = np.mean(window)
         std_dev = np.std(window)
-        # rolling_means.append(mean)
-        # rolling_stds.append(std_dev)
         
         # Avoid division by zero
         if std_dev == 0:
             z_score = 0
         else:
-            # Calculate z-score
-            z_score = (data_point - mean) / std_dev
+            z_score = (data_point - mean) / std_dev   # Calculate z-score
         
-        z_scores.append(z_score)
         # print(f"Index: {i}, Data point: {data_point}, Rolling mean: {mean}, Std dev: {std_dev}, Z-score: {z_score}")
 
         # Check if z-score exceeds the threshold (absolute value)
         if abs(z_score) > z_threshold:
-            print(f"\n Anomaly detected at index {index}: z_score = {z_score}\n")
+            # print(f"\n Anomaly detected at index {index}: z_score = {z_score}\n")
             return index
-            # anomalies.append(index)  # Index of the anomaly for plotting
-
-    else:
-        z_scores.append(None)  # Not enough data points yet
     
-    # return data_points, z_scores, anomalies, rolling_means, rolling_stds
     return None
+    # return data_points, z_scores, anomalies, rolling_means, rolling_stds
 
 
 
@@ -94,8 +73,6 @@ def rolling_z_score_anomaly_detection(data_point, index, window, window_size, z_
 def isolation_forest_anomaly_detection(iso_forest, data_point, index, data_buffer, buffer_size, step_size):
     anomaly_indices = []
 
-    flag = False
-    
     data_buffer.append([data_point])  # Add new data point to the buffer
 
     # Check if buffer is full
@@ -112,8 +89,6 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, index, data_buffe
         data_buffer = data_buffer[step_size:]
 
     return anomaly_indices
-
-
 
 
 
@@ -152,11 +127,11 @@ def parallel_anomaly_detection(data_stream, window_size,):
         if z_tmp is not None:
             z_score_anomalies.append(z_tmp)
 
-
         
         iso_tmp = isolation_forest_anomaly_detection(iso_forest=iso_forest, data_point=data_point, index =index, data_buffer=data_buffer, buffer_size=10, step_size=10)    #TODO: buffer size = 50
         if iso_tmp:
             iso_anomalies.extend(iso_tmp)
+
 
     print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
     print("Anomalies found at indices:", iso_anomalies)
@@ -178,42 +153,6 @@ parallel_anomaly_detection(data_stream, window_size=10,)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# # Create the data stream generator
-# data_stream = data_stream_generator(50)
-
-
-
-# # Detect anomalies with Rolling Z-Score
-# data_points, z_scores, z_score_anomalies, rolling_means, rolling_stds = rolling_z_score_anomaly_detection(data_stream=data_stream, window_size=10, z_threshold=2)
-# print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
-
-
-
-# # Detect anomalies with Isolation Forest
-# iso_anomalies = isolation_forest_anomaly_detection(data_stream=data_stream, buffer_size=50, step_size=10)
-# print("Anomalies found at indices:", iso_anomalies)
 
 
 
