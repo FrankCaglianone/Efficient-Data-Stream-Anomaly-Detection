@@ -171,28 +171,37 @@ def parallel_anomaly_detection(data_stream):
             A real-time plot of the data stream, highlighting anomalies in red.
     """
     
-    # Initialize variables
-    rolling_window_size=70
-    buffer_size = 100
-    z_threshold = 3
+    # Set key parameters for anomaly detection
+    rolling_window_size = 70  # Size of the rolling window for rolling z-score anomaly detection
+    buffer_size = 100  # Number of data points to buffer for Isolation Forest
+    z_threshold = 3  # Z-score threshold for detecting anomalies for rolling z-score anomaly detection
+
+    # Create a deque for storing data points used in the rolling z-score calculation
     window = deque(maxlen=rolling_window_size)
+
+    # Create a deque to buffer data points for Isolation Forest anomaly detection
     data_buffer = deque(maxlen=buffer_size)
+
+    # TODO: # Initialize the Isolation Forest model with 5% contamination, 150 trees, and a fixed random seed for reproducibility
     iso_forest = IsolationForest(contamination=0.05, n_estimators=150, random_state=42)
  
     # Initialize dynamic plot
     fig, ax, line, data_points_list, x_data_list = initialize_dynamic_plot()
-    color_list = []  # Initialize an empty color list
-    scatter = ax.scatter([], [], color=[], zorder=2)
+    color_list = []  # Initialize an empty list to store colors for each data point, used to indicate normal or anomalous point
+    # Create an empty scatter plot with no initial data.
+    scatter = ax.scatter([], [], color=[], zorder=2)    # Colors will be added to tehe list and updated dynamically zorder=2 places the scatter plot on top of the line plot.
 
-    # TODO: Anomalies Comment
+    # List of all detected anomalies
     all_anomalies = []
 
     for index, data_point in enumerate(data_stream):
-        
+        # Append the current data point to the list of y-values (data points) for plotting
         data_points_list.append(data_point)
+
+        # Append the current index to the list of x-values for plotting
         x_data_list.append(index)
 
-        # Anomaly detection using rolling Z-score
+        # Anomaly detection using Rolling Z-score
         z_anomaly = rolling_z_score_anomaly_detection(data_point, window, rolling_window_size, z_threshold)
 
         # Anomaly detection using Isolation Forest
@@ -202,7 +211,7 @@ def parallel_anomaly_detection(data_stream):
         is_anomaly = z_anomaly or iso_anomaly
         if is_anomaly: all_anomalies.append(index)
 
-       # Update color list: red for anomaly, blue for normal
+        # Update color list: red for anomaly, blue for normal
         color_list.append('red' if is_anomaly else 'blue')
 
         # Update the plot with new data
