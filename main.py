@@ -92,10 +92,8 @@ def rolling_z_score_anomaly_detection(data_point, window, window_size, z_thresho
             z_score = 0
         else:
             z_score = (data_point - mean) / std_dev   # Calculate z-score
-        # print(f"Index: {i}, Data point: {data_point}, Rolling mean: {mean}, Std dev: {std_dev}, Z-score: {z_score}")
 
         if abs(z_score) > z_threshold:
-            # print(f"\n Anomaly detected at index {index}: z_score = {z_score}\n")
             return True
     
     return False
