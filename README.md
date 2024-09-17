@@ -100,6 +100,6 @@ The data stream consists of:
    ```
 
 2. The script will generate a simulated data stream and apply both anomaly detection methods in parallel. A live plot will display the normal data points in blue and detected anomalies in red.
-3. You can stop the program at any time by pressing ctrl+c. This will gracefully shut down the live plot and display the final state of the plot before the program exits.
+3. You can stop the program at any time by pressing `ctrl+c`. This will gracefully shut down the live plot and display the final state of the plot before the program exits.
 
 
