@@ -116,14 +116,7 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
 
 
-
-
-
-
-
-
-
-# TODO: 
+# TODO buffer_size = 50
 def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
     """
     Runs both anomaly detection algorithms in parallel and updates the plot in real time.
@@ -139,8 +132,10 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
     color_window = ['blue'] * window_size  # Color window for dynamic color updates
     scatter = ax.scatter(x_data, data_window, color=color_window, zorder=2)  # Scatter plot for color changes
 
-    # Anomalies
-    anomalies = []
+    # TODO: Anomalies
+    z_score_anomalies = []
+    iso_anomalies = []
+    all_anomalies = []
 
     for index, data_point in enumerate(data_stream):
         # Update the rolling window with the new data point
@@ -148,16 +143,15 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
 
         # Anomaly detection using rolling Z-score
         z_anomaly = rolling_z_score_anomaly_detection(data_point, window, window_size, z_threshold)
+        if z_anomaly: z_score_anomalies.append(index)
 
         # Anomaly detection using Isolation Forest
         iso_anomaly = isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size)
+        if iso_anomaly : iso_anomalies.append(index)
 
         # Determine if it's an anomaly (detected by either method)
         is_anomaly = z_anomaly or iso_anomaly
-
-        # TODO
-        if is_anomaly:
-            anomalies.append(index)
+        if is_anomaly: all_anomalies.append(index)
 
         # Update color window: red for anomaly, blue for normal
         color_window.append('red' if is_anomaly else 'blue')
@@ -167,7 +161,9 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
         # Update the plot with new data and color window
         update_plot(data_window, color_window, x_data, line, scatter)
 
-    print("Detected anomalies:", anomalies)
+    print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
+    print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
+    print("Detected anomalies:", all_anomalies)
 
     
 
@@ -188,47 +184,6 @@ def main():
 
 
 
-
-
-
-
-
-
-def tmp(data_stream, visualization_window, visualization_line):
-    # Variables
-    buffer_size = 50
-    window_size = 10
-
-    # Create fixed-size window for rolling Z-Score
-    window = deque(maxlen=window_size)
-
-
-
-    
-    z_score_anomalies = []
-    iso_anomalies = []
-    data_points = []
-
-
-    # print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
-    # print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
-
-    # combined_anomalies = set(z_score_anomalies) & set(iso_anomalies)
-    # print("All detected anomalies:", combined_anomalies)
-
-    # Combining anomalies using union instead of intersection
-    combined_anomalies = set(z_score_anomalies) | set(iso_anomalies)
-    print("Filtered combined anomalies:", combined_anomalies)
-
-
-
-
-
-
-
-
-
-
 main()
 
 
@@ -238,19 +193,10 @@ main()
 
 
 
+# window_size = 10
+# window = deque(maxlen=window_size)
+
 
 #* Note Sliding Window: Instead of clearing the entire buffer after each detection round, we now implement a sliding window approach by keeping most of the buffer (removing only step_size points) to preserve the recent history of the data stream.
-
-
-
-
-
-
-
-
-
-
-
-
 
 
