@@ -110,7 +110,7 @@ def update_dynamic_plot(data_points_list, color_list, x_data_list, line, scatter
         ax.set_xlim(0, len(x_data_list) + 100)   # Extend the x-axis by 100 more data points to accommodate new data
 
     plt.draw()  # Redraw the updated plot with the new data and extended axis
-    plt.pause(0.01) # TODO: Pause to allow real-time updates and animation of the plot
+    plt.pause(0.01) # Pause to allow real-time updates and animation of the plot
 
 
 
