@@ -32,7 +32,7 @@ def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_a
         # Generate the regular pattern using a sine wave
         regular_pattern = amplitude * np.sin(2 * np.pi * frequency * t)
         
-        # Add the seasonal component a cosine wave
+        # Add the seasonal component using a cosine wave
         seasonal_component = seasonal_amplitude * np.cos(2 * np.pi * seasonal_frequency * t)
         
         # Add random noise (Gaussian distribution)
