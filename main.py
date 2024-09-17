@@ -10,7 +10,9 @@ import matplotlib.pyplot as plt
 
 
 def handle_sigint(signum, frame):
-    """Handles graceful shutdown on keyboard interrupt (ctrl+c)."""
+    """
+        Handles graceful shutdown on keyboard interrupt (ctrl+c).
+    """
     print("\nProgram interrupted! Shutting down...")
     plt.ioff()  # Turn off interactive mode for the plot
     plt.show()  # Show the final plot before exiting
@@ -35,7 +37,7 @@ def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_a
             float: A simulated data point with noise and occasional anomalies.
     """ 
 
-    t = 0 # TODO
+    t = 0   # Time step variable, it tracks time for the sine and cosine waves. 
     count = 0
     while True:
         # Generate the regular pattern using a sine wave
@@ -256,7 +258,7 @@ def parallel_anomaly_detection(data_stream):
     # Set key parameters for anomaly detection
     rolling_window_size = 70  # Size of the rolling window for rolling z-score anomaly detection
     buffer_size = 100  # Number of data points to buffer for Isolation Forest
-    z_threshold = 3  # Z-score threshold for detecting anomalies for rolling z-score anomaly detection
+    z_threshold = 2.5  # Z-score threshold for detecting anomalies for rolling z-score anomaly detection
 
     # Create a deque for storing data points used in the rolling z-score calculation
     window = deque(maxlen=rolling_window_size)
