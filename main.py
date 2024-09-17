@@ -1,11 +1,20 @@
 import time
 import random
+import signal
 from collections import deque
 
 import numpy as np
 from sklearn.ensemble import IsolationForest
 import matplotlib.pyplot as plt
 
+
+
+def handle_sigint(signum, frame):
+    """Handles graceful shutdown on keyboard interrupt (ctrl+c)."""
+    print("\nProgram interrupted! Shutting down...")
+    plt.ioff()  # Turn off interactive mode for the plot
+    plt.show()  # Show the final plot before exiting
+    exit(0)
 
 
 
@@ -222,14 +231,15 @@ def parallel_anomaly_detection(data_stream):
 
 
 
-
-
 def main():
     """
         The main entry point for the anomaly detection system. It simulates a real-time data stream,
         applies two anomaly detection methods (rolling z-score and Isolation Forest) in parallel, 
         and continuously updates a dynamic live plot to visualize the results.
     """
+
+    # Register the SIGINT handler for graceful shutdown
+    signal.signal(signal.SIGINT, handle_sigint)
         
     # Create the data stream generator
     data_stream = data_stream_simulation()
@@ -237,13 +247,11 @@ def main():
     # Run the parallel anomaly detection and real-time plot update
     parallel_anomaly_detection(data_stream)
 
-    # TODO: Fix to handle ctrl+c
-    # Turn off interactive mode when done
+    # Turn off interactive mode when done (in case ctrl+c wasn't used)
     plt.ioff()
 
     # Display the final plot
     plt.show()
-
 
 
 
