@@ -1,5 +1,6 @@
 import time
 import random
+import math
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from collections import deque
@@ -10,31 +11,38 @@ import matplotlib.pyplot as plt
 
 
 
-
-def data_stream_generator(max_data_points):
-    '''
-     TODO
-    '''
-
+def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_amplitude=0.5, seasonal_frequency=0.1, sleep_time=0.1):    
+    t = 0
     count = 0
-
-    while count < max_data_points:
-        # Simulate a real-time data point (normal distribution with occasional spikes)
-        data_point = random.gauss(0, 1)  # Mean = 0, Standard Deviation = 1
-
-        # Introduce random anomalies occasionally
-        if count >= 10 and random.random() < 0.05:  # 5% chance of anomaly
-            data_point += random.uniform(15, 20)  # Spike anomaly
+    while True:
+        # Generate the regular pattern (sine wave)
+        regular_pattern = amplitude * np.sin(2 * np.pi * frequency * t)
+        
+        # Add the seasonal component (cosine wave)
+        seasonal_component = seasonal_amplitude * np.cos(2 * np.pi * seasonal_frequency * t)
+        
+        # Add random noise (Gaussian distribution)
+        noise = np.random.normal(scale=noise_scale)
+        
+        # Combine all components to create the data point
+        data_point = regular_pattern + seasonal_component + noise
+        
+        # Inject an anomaly every 'anomaly_interval' data points
+        # Randomly inject an anomaly with probability anomaly_chance
+        if count > 10 and random.random() < 0.05:
+            anomaly_magnitude = random.uniform(15, 20)
+            data_point += anomaly_magnitude * random.choice([-1, 1])  # Randomly inject positive or negative anomalies
             print(f"Anomaly introduced at {count} --> {data_point}")
-        # else:
-        #     print(f"Normal point at {count} --> {data_point}")
-
+        
+        # Yield the generated data point
         yield data_point
         
-        # Simulate real-time delay
-        time.sleep(0.1)
-        
+        # Increment time and counter for the next data point
+        t += 0.01
         count += 1
+        
+        # Simulate real-time streaming
+        time.sleep(sleep_time)
 
 
 
@@ -114,16 +122,13 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
 
 
-
-
-
 def parallel_anomaly_detection(data_stream):
     """
-    Runs both anomaly detection algorithms in parallel and updates the plot in real time.
+     Runs both anomaly detection algorithms in parallel and updates the plot in real time.
     """
     # Initialize variables
-    plot_window_size=200
-    rolling_window_size=10
+    plot_window_size=500
+    rolling_window_size=50
     buffer_size = 50
     z_threshold = 2
     window = deque(maxlen=rolling_window_size)
@@ -175,7 +180,7 @@ def parallel_anomaly_detection(data_stream):
 
 def main():
     # Create the data stream generator
-    data_stream = data_stream_generator(500)
+    data_stream = data_stream_simulation()
 
     # Run the parallel anomaly detection and real-time plot update
     parallel_anomaly_detection(data_stream)
@@ -190,15 +195,6 @@ def main():
 
 main()
 
-
-
-
-
-
-
-
-# window_size = 10
-# window = deque(maxlen=window_size)
 
 
 #* Note Sliding Window: Instead of clearing the entire buffer after each detection round, we now implement a sliding window approach by keeping most of the buffer (removing only step_size points) to preserve the recent history of the data stream.
