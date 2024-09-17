@@ -169,6 +169,57 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
 
 
+def concept_drift_detection(data_point, recent_data, window_size, drift_threshold):
+    """
+        Custom concept drift detection based on changes in mean and variance.
+
+        Args:
+            data_point (float): The current data point.
+            recent_data (deque): A deque storing recent data points.
+            window_size (int): The size of the sliding window.
+            drift_threshold (float): Threshold to trigger drift detection based on standard deviation.
+        
+        Returns:
+            bool: True if concept drift is detected, False otherwise.
+    """
+    recent_data.append(data_point)
+
+    if len(recent_data) < window_size:
+        return False  # Not enough data for drift detection
+    
+    # Calculate mean and variance of the current window
+    mean = np.mean(recent_data)
+    std_dev = np.std(recent_data)
+
+    # Check if the current data point deviates significantly from the mean
+    if abs(data_point - mean) > drift_threshold * std_dev:
+        return True  # Concept drift detected
+    
+    return False
+
+
+
+def handle_concept_drift(data_point, recent_data, window_size, drift_threshold, iso_forest):
+    """
+        Handles concept drift detection and retrains the model if drift is detected.
+
+        Args:
+            data_point (float): The current data point.
+            recent_data (deque): A deque storing recent data points.
+            window_size (int): The size of the sliding window.
+            drift_threshold (float): Threshold to trigger drift detection.
+            iso_forest (IsolationForest): The Isolation Forest model to retrain.
+    """
+    drift_detected = concept_drift_detection(data_point, recent_data, window_size, drift_threshold)
+
+    if drift_detected:
+        print("Concept drift detected! Retraining Isolation Forest...")
+        if len(recent_data) >= window_size:
+            iso_forest.fit(np.array(recent_data).reshape(-1, 1))    # Train Isolation Forest on most recent data
+            print("Model retrained.")
+
+
+
 def parallel_anomaly_detection(data_stream):
     """
         Runs both anomaly detection algorithms (Rolling z-score and Isolation Fores) in parallel, 
@@ -204,6 +255,12 @@ def parallel_anomaly_detection(data_stream):
     # List of all detected anomalies
     all_anomalies = []
 
+    # Concept drift detection setup
+    window_size = 100
+    drift_threshold = 2.0  # Sensitivity for concept drift
+    recent_data = deque(maxlen=window_size)
+
+
     for index, data_point in enumerate(data_stream):
         # Append the current data point to the list of y-values (data points) for plotting
         data_points_list.append(data_point)
@@ -223,6 +280,9 @@ def parallel_anomaly_detection(data_stream):
 
         # Update color list: red for anomaly, blue for normal
         color_list.append('red' if is_anomaly else 'blue')
+
+        # Handle concept drift
+        handle_concept_drift(data_point, recent_data, window_size, drift_threshold, iso_forest)
 
         # Update the plot with new data
         update_dynamic_plot(data_points_list, color_list, x_data_list, line, scatter, ax)
