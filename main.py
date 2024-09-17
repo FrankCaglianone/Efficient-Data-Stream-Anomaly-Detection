@@ -41,6 +41,12 @@ def data_stream_generator(max_data_points):
 
 
 
+
+
+
+
+
+
 def initialize_real_time_plot(window_size=50):
     """
     Initializes a real-time plot with a specific window size and y-axis limits.
@@ -111,6 +117,13 @@ def update_plot(new_value, data_window, line):
 
 
 
+
+
+
+
+
+
+
 '''
 * TODO
 '''
@@ -138,6 +151,12 @@ def rolling_z_score_anomaly_detection(data_point, index, window, window_size, z_
     
     return None
     # return data_points, z_scores, anomalies, rolling_means, rolling_stds
+
+
+
+
+
+
 
 
 
