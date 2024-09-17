@@ -117,20 +117,23 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
 
 
-def parallel_anomaly_detection(data_stream, window_size):
+def parallel_anomaly_detection(data_stream):
     """
     Runs both anomaly detection algorithms in parallel and updates the plot in real time.
     """
     # Initialize variables
-    window = deque(maxlen=window_size)
-    data_buffer = []
-    iso_forest = IsolationForest(contamination=0.08, random_state=42)
+    plot_window_size=200
+    rolling_window_size=10
     buffer_size = 50
     z_threshold = 2
+    window = deque(maxlen=rolling_window_size)
+    data_buffer = []
+    iso_forest = IsolationForest(contamination=0.08, random_state=42)
+ 
 
     # Initialize plot
-    fig, ax, line, data_window, x_data = initialize_real_time_plot(window_size=window_size)
-    color_window = ['blue'] * window_size  # Color window for dynamic color updates
+    fig, ax, line, data_window, x_data = initialize_real_time_plot(window_size=plot_window_size)
+    color_window = ['blue'] * plot_window_size  # Color window for dynamic color updates
     scatter = ax.scatter(x_data, data_window, color=color_window, zorder=2)  # Scatter plot for color changes
 
     # TODO: Anomalies Comment
@@ -143,7 +146,7 @@ def parallel_anomaly_detection(data_stream, window_size):
         data_window.append(data_point)
 
         # Anomaly detection using rolling Z-score
-        z_anomaly = rolling_z_score_anomaly_detection(data_point, window, window_size, z_threshold)
+        z_anomaly = rolling_z_score_anomaly_detection(data_point, window, rolling_window_size, z_threshold)
         if z_anomaly: z_score_anomalies.append(index)
 
         # Anomaly detection using Isolation Forest
@@ -156,7 +159,7 @@ def parallel_anomaly_detection(data_stream, window_size):
 
         # Update color window: red for anomaly, blue for normal
         color_window.append('red' if is_anomaly else 'blue')
-        if len(color_window) > window_size:
+        if len(color_window) > plot_window_size:
             color_window.pop(0)  # Keep the color window in sync with data
 
         # Update the plot with new data and color window
@@ -175,7 +178,7 @@ def main():
     data_stream = data_stream_generator(500)
 
     # Run the parallel anomaly detection and real-time plot update
-    parallel_anomaly_detection(data_stream, window_size=200)
+    parallel_anomaly_detection(data_stream)
 
     plt.ioff()  # Turn off interactive mode when done
     plt.show()  # Display the final plot
