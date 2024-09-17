@@ -125,11 +125,11 @@ def parallel_anomaly_detection(data_stream):
     # Initialize variables
     plot_window_size=500
     rolling_window_size=70
-    buffer_size = 70
+    buffer_size = 100
     z_threshold = 3
     window = deque(maxlen=rolling_window_size)
-    data_buffer = []
-    iso_forest = IsolationForest(contamination=0.03, n_estimators=150, random_state=42)
+    data_buffer = deque(maxlen=buffer_size)
+    iso_forest = IsolationForest(contamination=0.05, n_estimators=150, random_state=42)
  
     # Initialize plot
     fig, ax, line, data_window, x_data = initialize_real_time_plot(window_size=plot_window_size)
@@ -147,13 +147,7 @@ def parallel_anomaly_detection(data_stream):
 
         # Anomaly detection using rolling Z-score
         z_anomaly = rolling_z_score_anomaly_detection(data_point, window, rolling_window_size, z_threshold)
-        if z_anomaly:
-            z_score_anomalies.append(index)
-            print(f"ANOMALY!!!!!!!   at :{data_point}")
-        else:
-            print(f"{data_point} ")
-
-        print('\n')
+        if z_anomaly: z_score_anomalies.append(index)
 
         # Anomaly detection using Isolation Forest
         iso_anomaly = isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size)
