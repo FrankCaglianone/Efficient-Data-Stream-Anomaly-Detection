@@ -218,6 +218,29 @@ def handle_concept_drift(data_point, recent_data, window_size, drift_threshold, 
 
 
 
+def remove_seasonality(data_points_list, period=100):
+    """
+        Manually removes seasonal component using a sliding window approach.
+
+        Args:
+            data_points_list (list): List of data points to process.
+            period (int): The periodicity of the seasonal component (estimated).
+
+        Returns:
+            float: The deseasonalized data point (current data point minus average seasonal value).
+    """
+    if len(data_points_list) >= period:
+        # Estimate the seasonal component by averaging over the periodic window
+        seasonal_mean = np.mean(data_points_list[-period:])
+        # Return the current data point minus the seasonal component
+        deseasonalized_point = data_points_list[-1] - seasonal_mean
+        return deseasonalized_point
+    else:
+        # If not enough data for seasonal estimation, return the original data point
+        return data_points_list[-1]
+
+
+
 def parallel_anomaly_detection(data_stream):
     """
         Runs both anomaly detection algorithms (Rolling z-score and Isolation Fores) in parallel, 
@@ -265,6 +288,9 @@ def parallel_anomaly_detection(data_stream):
 
         # Append the current index to the list of x-values for plotting
         x_data_list.append(index)
+
+        # Manually remove seasonal component
+        deseasonalized_data_point = remove_seasonality(data_points_list, period=100)
 
         # Anomaly detection using Rolling Z-score
         z_anomaly = rolling_z_score_anomaly_detection(data_point, window, rolling_window_size, z_threshold)
