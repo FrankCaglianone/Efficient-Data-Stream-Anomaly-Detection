@@ -11,10 +11,10 @@ import matplotlib.pyplot as plt
 
 
 
-def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_amplitude=0.5, seasonal_frequency=0.1, sleep_time=0.1):    
+def data_stream_simulation(max_points=500, amplitude=1, frequency=1, noise_scale=0.1, seasonal_amplitude=0.5, seasonal_frequency=0.1, sleep_time=0.1):    
     t = 0
     count = 0
-    while True:
+    while count <= max_points: # TODO: True:
         # Generate the regular pattern (sine wave)
         regular_pattern = amplitude * np.sin(2 * np.pi * frequency * t)
         
@@ -174,7 +174,7 @@ def parallel_anomaly_detection(data_stream):
     print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
     print("Detected anomalies:", all_anomalies)
 
-    
+
 
 
 
