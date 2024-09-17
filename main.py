@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 
-def data_stream_simulation(max_points=500, amplitude=1, frequency=1, noise_scale=0.1, seasonal_amplitude=0.5, seasonal_frequency=0.1, sleep_time=0.1):    
+def data_stream_simulation(max_points=1000, amplitude=1, frequency=1, noise_scale=0.1, seasonal_amplitude=0.5, seasonal_frequency=0.1, sleep_time=0.1):    
     t = 0
     count = 0
     while count <= max_points: # TODO: True:
@@ -26,10 +26,10 @@ def data_stream_simulation(max_points=500, amplitude=1, frequency=1, noise_scale
         
         # Inject an anomaly every 'anomaly_interval' data points
         # Randomly inject an anomaly with probability anomaly_chance
-        if count > 30 and random.random() < 0.05:
-            anomaly_magnitude = random.uniform(15, 20)
+        if count > 70 and random.random() < 0.05:
+            anomaly_magnitude = random.uniform(10, 20)
             data_point += anomaly_magnitude * random.choice([-1, 1])  # Randomly inject positive or negative anomalies
-            print(f"Anomaly introduced at {count} --> {data_point}")
+            # print(f"Anomaly introduced at {count} --> {data_point}")
         
         # Yield the generated data point
         yield data_point
@@ -93,6 +93,7 @@ def rolling_z_score_anomaly_detection(data_point, window, window_size, z_thresho
         else:
             z_score = (data_point - mean) / std_dev   # Calculate z-score
 
+        print(z_score)
         if abs(z_score) > z_threshold:
             return True
     
@@ -123,9 +124,9 @@ def parallel_anomaly_detection(data_stream):
     """
     # Initialize variables
     plot_window_size=500
-    rolling_window_size=50
-    buffer_size = 50
-    z_threshold = 2
+    rolling_window_size=70
+    buffer_size = 70
+    z_threshold = 3
     window = deque(maxlen=rolling_window_size)
     data_buffer = []
     iso_forest = IsolationForest(contamination=0.03, n_estimators=150, random_state=42)
@@ -146,7 +147,13 @@ def parallel_anomaly_detection(data_stream):
 
         # Anomaly detection using rolling Z-score
         z_anomaly = rolling_z_score_anomaly_detection(data_point, window, rolling_window_size, z_threshold)
-        if z_anomaly: z_score_anomalies.append(index)
+        if z_anomaly:
+            z_score_anomalies.append(index)
+            print(f"ANOMALY!!!!!!!   at :{data_point}")
+        else:
+            print(f"{data_point} ")
+
+        print('\n')
 
         # Anomaly detection using Isolation Forest
         iso_anomaly = isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size)
