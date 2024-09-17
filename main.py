@@ -88,20 +88,19 @@ def update_dynamic_plot(data_points_list, color_list, x_data, line, scatter, ax)
             scatter (PathCollection): The scatter object for anomaly visualization.
             ax (Axes): The axis object to update the x-axis limits.
     """
-    # Update the line plot with new data
-    line.set_ydata(data_points_list)
-    line.set_xdata(x_data)
+    
+    line.set_ydata(data_points_list)    # Update the y-values of the line plot with the latest data points
+    line.set_xdata(x_data)  # Update the x-values of the line plot to correspond with each data point in data_points_list
 
-    # Update the scatter plot with the same new data and colors
-    scatter.set_offsets(np.c_[x_data, data_points_list])
-    scatter.set_color(color_list)
+    scatter.set_offsets(np.c_[x_data, data_points_list])    # Update the scatter plot with the same new x and y data points
+    scatter.set_color(color_list)   # Update the colors for the scatter plot based on whether each point is an anomaly or normal
 
-    # Dynamically extend the x-axis when needed
+    # Dynamically extend the x-axis if needed
     if len(x_data) > ax.get_xlim()[1]:
-        ax.set_xlim(0, len(x_data) + 100)  # Extend the x-axis by 100 more data points
+        ax.set_xlim(0, len(x_data) + 100)   # Extend the x-axis by 100 more data points to accommodate new data
 
-    plt.draw()
-    plt.pause(0.01)
+    plt.draw()  # Redraw the updated plot with the new data and extended axis
+    plt.pause(0.01) # TODO: Pause to allow real-time updates and animation of the plot
 
 
 
@@ -126,7 +125,7 @@ def rolling_z_score_anomaly_detection(data_point, window, window_size, z_thresho
         std_dev = np.std(window)    # Calculate standard deviation of the window
 
         # Avoid division by zero
-        z_score = 0 if std_dev == 0 else (data_point - mean) / std_dev  # Calculate z-score
+        z_score = 0 if std_dev == 0 else (data_point - mean) / std_dev  # Calculate z-score of the Data Point
 
         if abs(z_score) > z_threshold:  # Check if the absolute value of the z-score exceeds the threshold
             return True
