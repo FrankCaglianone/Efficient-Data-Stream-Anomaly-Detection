@@ -59,16 +59,16 @@ def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_a
 
 def initialize_dynamic_plot():
     """
-    Initializes a real-time dynamic plot without a fixed window size.
-    
-    Returns:
-        tuple: Figure, axis, line plot, data_window list, and initial x-axis data array.
+        Initializes a real-time dynamic plot.
+        
+        Returns:
+            tuple: Figure, axis, line plot, data_window list, and initial x-axis data array.
     """
     plt.ion()  # Enable interactive mode
     fig, ax = plt.subplots(figsize=(10, 6))  # Create a new figure and axis
     data_window = []  # Initialize an empty data window (grows over time)
     x_data = []  # Initialize an empty x-axis data array (grows over time)
-    line, = ax.plot([], [], color='blue', zorder=1)  # Create an empty line plot
+    line, = ax.plot([], [], color='blue', zorder=1)  # Create an empty line plot with blue color and zorder=1 (sets its layering below scatter points)
 
     ax.set_ylim((-25, 25))  # Set initial y-axis limits
     ax.set_xlim((0, 200))  # Set initial x-axis limits (we'll update this later)
@@ -78,15 +78,15 @@ def initialize_dynamic_plot():
 
 def update_dynamic_plot(data_window, color_window, x_data, line, scatter, ax):
     """
-    Updates the real-time plot with new data and dynamically extends the x-axis when needed.
+        Updates the real-time plot with new data and dynamically extends the x-axis when needed.
     
-    Args:
-        data_window (list): A list of data points to be plotted.
-        color_window (list): A list of colors for each data point (red for anomaly, blue for normal).
-        x_data (list): The x-axis data points, grows as more data is added.
-        line (Line2D): The line object for the regular data plot.
-        scatter (PathCollection): The scatter object for anomaly visualization.
-        ax (Axes): The axis object to update the x-axis limits.
+        Args:
+            data_window (list): A list of data points to be plotted.
+            color_window (list): A list of colors for each data point (red for anomaly, blue for normal).
+            x_data (list): The x-axis data points, grows as more data is added.
+            line (Line2D): The line object for the regular data plot.
+            scatter (PathCollection): The scatter object for anomaly visualization.
+            ax (Axes): The axis object to update the x-axis limits.
     """
     # Update the line plot with new data
     line.set_ydata(data_window)
