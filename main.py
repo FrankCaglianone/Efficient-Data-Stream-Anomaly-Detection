@@ -47,7 +47,7 @@ def initialize_real_time_plot(window_size):
     fig, ax = plt.subplots(figsize=(10, 6))  # Create a new figure and axis
     data_window = deque([0] * window_size, maxlen=window_size)  # Data window
     x_data = np.linspace(0, window_size - 1, window_size)  # X-axis for data points
-    line, = ax.plot(x_data, data_window, color='blue')  # Line object
+    line, = ax.plot(x_data, data_window, color='blue', zorder=1)  # Line object
 
     ax.set_ylim((-25, 25))  # Set y-axis limits
 
@@ -137,7 +137,7 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
     # Initialize plot
     fig, ax, line, data_window, x_data = initialize_real_time_plot(window_size=window_size)
     color_window = ['blue'] * window_size  # Color window for dynamic color updates
-    scatter = ax.scatter(x_data, data_window, color=color_window)  # Scatter plot for color changes
+    scatter = ax.scatter(x_data, data_window, color=color_window, zorder=2)  # Scatter plot for color changes
 
     # Anomalies
     anomalies = []
