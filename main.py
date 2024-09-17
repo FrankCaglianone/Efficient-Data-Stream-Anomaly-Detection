@@ -243,8 +243,8 @@ def parallel_anomaly_detection(data_stream):
     # Create a deque to buffer data points for Isolation Forest anomaly detection
     data_buffer = deque(maxlen=buffer_size)
 
-    # TODO: # Initialize the Isolation Forest model with 5% contamination, 150 trees, and a fixed random seed for reproducibility
-    iso_forest = IsolationForest(contamination=0.05, n_estimators=150, random_state=42)
+    # Initialize the Isolation Forest model with 5% contamination and 150 trees
+    iso_forest = IsolationForest(contamination=0.05, n_estimators=150)
  
     # Initialize dynamic plot
     fig, ax, line, data_points_list, x_data_list = initialize_dynamic_plot()
