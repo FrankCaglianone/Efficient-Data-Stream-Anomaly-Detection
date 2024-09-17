@@ -26,7 +26,7 @@ def data_stream_simulation(max_points=500, amplitude=1, frequency=1, noise_scale
         
         # Inject an anomaly every 'anomaly_interval' data points
         # Randomly inject an anomaly with probability anomaly_chance
-        if count > 25 and random.random() < 0.05:
+        if count > 30 and random.random() < 0.05:
             anomaly_magnitude = random.uniform(15, 20)
             data_point += anomaly_magnitude * random.choice([-1, 1])  # Randomly inject positive or negative anomalies
             print(f"Anomaly introduced at {count} --> {data_point}")
