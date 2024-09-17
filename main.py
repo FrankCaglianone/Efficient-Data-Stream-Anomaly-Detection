@@ -59,7 +59,7 @@ def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_a
 
 def initialize_real_time_plot(window_size):
     """
-     Initializes a real-time plot with a specific window size.
+     TODO
     """
     plt.ion()  # Enable interactive mode
     
@@ -76,7 +76,7 @@ def initialize_real_time_plot(window_size):
 
 def update_plot(data_window, color_window, x_data, line, scatter):
     """
-     Updates the real-time plot with the new data value and color.
+     TODO
     """
     # Update the line plot
     line.set_ydata(data_window)
@@ -91,24 +91,29 @@ def update_plot(data_window, color_window, x_data, line, scatter):
 
 
 def rolling_z_score_anomaly_detection(data_point, window, window_size, z_threshold):
-    '''
-     TODO
-    '''
+    """
+        Detects anomalies using the rolling z-score method.
+        
+        Args:
+            data_point (float): The current data point.
+            window (deque): A rolling window of recent data points.
+            window_size (int): The size of the rolling window.
+            z_threshold (float): The z-score threshold for detecting anomalies.
+        
+        Returns:
+            bool: True if the data point is detected as an anomaly, False otherwise.
+    """
 
     window.append(data_point)
 
     if len(window) == window_size:
         mean = np.mean(window)  # Calculate mean of the window
         std_dev = np.std(window)    # Calculate standard deviation of the window
-        
-        # Avoid division by zero
-        if std_dev == 0:
-            z_score = 0
-        else:
-            z_score = (data_point - mean) / std_dev   # Calculate z-score
 
-        print(z_score)
-        if abs(z_score) > z_threshold:
+        # Avoid division by zero
+        z_score = 0 if std_dev == 0 else (data_point - mean) / std_dev  # Calculate z-score
+
+        if abs(z_score) > z_threshold:  # Check if the absolute value of the z-score exceeds the threshold
             return True
     
     return False
@@ -116,15 +121,23 @@ def rolling_z_score_anomaly_detection(data_point, window, window_size, z_thresho
 
 
 def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size):
-    '''
-     TODO
-    '''
+    """
+        Detects anomalies using the Isolation Forest method.
+        
+        Args:
+            iso_forest (IsolationForest): An instance of the IsolationForest model.
+            data_point (float): The current data point.
+            data_buffer (deque): A buffer of recent data points.
+            buffer_size (int): The size of the data buffer.
+        
+        Returns:
+            bool: True if the data point is detected as an anomaly, False otherwise.
+    """
     
     data_buffer.append([data_point])  # Add new data point to the buffer
 
     if len(data_buffer) >= buffer_size:    
         anomaly_labels = iso_forest.fit_predict(data_buffer)  # Fit the model to the buffer & predict anomalies
-
         if anomaly_labels[-1] == -1:  # Check if the latest data point is an anomaly
             return True
         
@@ -134,7 +147,7 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
 def parallel_anomaly_detection(data_stream):
     """
-     Runs both anomaly detection algorithms in parallel and updates the plot in real time.
+     TODO: Runs both anomaly detection algorithms in parallel and updates the plot in real time.
     """
     # Initialize variables
     plot_window_size=500
