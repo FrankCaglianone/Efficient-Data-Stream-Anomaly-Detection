@@ -38,3 +38,51 @@ def plot_anomalies(data_points, anomalies):
     
     # Display the plot
     plt.show()
+
+
+
+
+
+
+
+
+
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+import random
+from collections import deque
+
+
+
+
+
+# def visualize_data():
+#     # Initialize plot
+#     plt.ion()  # Interactive mode on
+#     fig, ax = plt.subplots()
+#     window_size = 50  # Number of points to display at once
+#     data_window = deque([0]*window_size, maxlen=window_size)  # Stores the recent data points
+#     x_data = np.linspace(0, window_size-1, window_size)  # X-axis for data points
+
+#     line, = ax.plot(x_data, data_window)
+
+#     ax.set_ylim([-2, 2])  # Y-axis limits (adjust as necessary)
+
+
+
+# # Update plot with new data
+# def update_plot(new_value):
+#     data_window.append(new_value)
+#     line.set_ydata(data_window)
+#     plt.draw()
+#     plt.pause(0.01)  # Small pause to allow the plot to update
+
+
+
+
+
+# # Main loop for real-time plotting
+# for value in data_stream():
+#     update_plot(value)
