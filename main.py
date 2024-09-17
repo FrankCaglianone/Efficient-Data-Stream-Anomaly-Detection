@@ -76,13 +76,13 @@ def initialize_dynamic_plot():
     return fig, ax, line, data_points_list, x_data
 
 
-def update_dynamic_plot(data_points_list, color_window, x_data, line, scatter, ax):
+def update_dynamic_plot(data_points_list, color_list, x_data, line, scatter, ax):
     """
         Updates the real-time plot with new data and dynamically extends the x-axis when needed.
     
         Args:
             data_points_list (list): A list of data points to be plotted.
-            color_window (list): A list of colors for each data point (red for anomaly, blue for normal).
+            color_list (list): A list of colors for each data point (red for anomaly, blue for normal).
             x_data (list): The x-axis data points, grows as more data is added.
             line (Line2D): The line object for the regular data plot.
             scatter (PathCollection): The scatter object for anomaly visualization.
@@ -94,7 +94,7 @@ def update_dynamic_plot(data_points_list, color_window, x_data, line, scatter, a
 
     # Update the scatter plot with the same new data and colors
     scatter.set_offsets(np.c_[x_data, data_points_list])
-    scatter.set_color(color_window)
+    scatter.set_color(color_list)
 
     # Dynamically extend the x-axis when needed
     if len(x_data) > ax.get_xlim()[1]:
@@ -175,7 +175,7 @@ def parallel_anomaly_detection(data_stream):
  
     # Initialize plot
     fig, ax, line, data_points_list, x_data = initialize_dynamic_plot()
-    color_window = []  # Initialize an empty color window
+    color_list = []  # Initialize an empty color window
     scatter = ax.scatter([], [], color=[], zorder=2)
 
     # TODO: Anomalies Comment
@@ -201,10 +201,10 @@ def parallel_anomaly_detection(data_stream):
         if is_anomaly: all_anomalies.append(index)
 
        # Update color window: red for anomaly, blue for normal
-        color_window.append('red' if is_anomaly else 'blue')
+        color_list.append('red' if is_anomaly else 'blue')
 
         # Update the plot with new data and color window
-        update_dynamic_plot(data_points_list, color_window, x_data, line, scatter, ax)
+        update_dynamic_plot(data_points_list, color_list, x_data, line, scatter, ax)
 
 
     print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
