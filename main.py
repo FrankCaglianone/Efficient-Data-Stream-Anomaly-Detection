@@ -10,18 +10,20 @@ import matplotlib.pyplot as plt
 
 
 
-'''
-* TODO
-'''
+
 def data_stream_generator(max_data_points):
-    count = 0  # Counter to stop after max_data_points
+    '''
+    * TODO
+    '''
+
+    count = 0
 
     while count < max_data_points:
         # Simulate a real-time data point (normal distribution with occasional spikes)
         data_point = random.gauss(0, 1)  # Mean = 0, Standard Deviation = 1
 
         # Introduce random anomalies occasionally
-        if count >= 10 and random.random() < 0.05:  # 0.1 = 10% chance of anomaly
+        if count >= 10 and random.random() < 0.05:  # 5% chance of anomaly
             data_point += random.uniform(15, 20)  # Spike anomaly
             print(f"Anomaly introduced at {count} --> {data_point}")
         # else:
@@ -30,7 +32,7 @@ def data_stream_generator(max_data_points):
         yield data_point
         
         # Simulate real-time delay
-        time.sleep(0.1)  # 900ms delay between data points (adjust as needed)
+        time.sleep(0.1)
         
         count += 1
 
@@ -202,6 +204,9 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
     color_window = ['blue'] * window_size  # Color window for dynamic color updates
     scatter = ax.scatter(x_data, data_window, color=color_window)  # Scatter plot for color changes
 
+    # Anomalies
+    anomalies = []
+
     for index, data_point in enumerate(data_stream):
         # Update the rolling window with the new data point
         data_window.append(data_point)
@@ -215,6 +220,10 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
         # Determine if it's an anomaly (detected by either method)
         is_anomaly = z_anomaly or iso_anomaly
 
+        # TODO
+        if is_anomaly:
+            anomalies.append(index)
+
         # Update color window: red for anomaly, blue for normal
         color_window.append('red' if is_anomaly else 'blue')
         if len(color_window) > window_size:
@@ -222,6 +231,12 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
 
         # Update the plot with new data and color window
         update_plot(data_window, color_window, x_data, line, scatter)
+
+    
+    print("Filtered combined anomalies:", anomalies)
+
+    
+
 
 
 def main():
