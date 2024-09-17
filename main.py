@@ -62,26 +62,26 @@ def initialize_dynamic_plot():
         Initializes a real-time dynamic plot.
         
         Returns:
-            tuple: Figure, axis, line plot, data_window list, and initial x-axis data array.
+            tuple: Figure, axis, line plot, data_points_list, and initial x-axis data array.
     """
     plt.ion()  # Enable interactive mode
     fig, ax = plt.subplots(figsize=(10, 6))  # Create a new figure and axis
-    data_window = []  # Initialize an empty data window (grows over time)
+    data_points_list = []  # Initialize an empty data window (grows over time)
     x_data = []  # Initialize an empty x-axis data array (grows over time)
     line, = ax.plot([], [], color='blue', zorder=1)  # Create an empty line plot with blue color and zorder=1 (sets its layering below scatter points)
 
     ax.set_ylim((-25, 25))  # Set initial y-axis limits
     ax.set_xlim((0, 200))  # Set initial x-axis limits (we'll update this later)
 
-    return fig, ax, line, data_window, x_data
+    return fig, ax, line, data_points_list, x_data
 
 
-def update_dynamic_plot(data_window, color_window, x_data, line, scatter, ax):
+def update_dynamic_plot(data_points_list, color_window, x_data, line, scatter, ax):
     """
         Updates the real-time plot with new data and dynamically extends the x-axis when needed.
     
         Args:
-            data_window (list): A list of data points to be plotted.
+            data_points_list (list): A list of data points to be plotted.
             color_window (list): A list of colors for each data point (red for anomaly, blue for normal).
             x_data (list): The x-axis data points, grows as more data is added.
             line (Line2D): The line object for the regular data plot.
@@ -89,11 +89,11 @@ def update_dynamic_plot(data_window, color_window, x_data, line, scatter, ax):
             ax (Axes): The axis object to update the x-axis limits.
     """
     # Update the line plot with new data
-    line.set_ydata(data_window)
+    line.set_ydata(data_points_list)
     line.set_xdata(x_data)
 
     # Update the scatter plot with the same new data and colors
-    scatter.set_offsets(np.c_[x_data, data_window])
+    scatter.set_offsets(np.c_[x_data, data_points_list])
     scatter.set_color(color_window)
 
     # Dynamically extend the x-axis when needed
@@ -174,7 +174,7 @@ def parallel_anomaly_detection(data_stream):
     iso_forest = IsolationForest(contamination=0.05, n_estimators=150, random_state=42)
  
     # Initialize plot
-    fig, ax, line, data_window, x_data = initialize_dynamic_plot()
+    fig, ax, line, data_points_list, x_data = initialize_dynamic_plot()
     color_window = []  # Initialize an empty color window
     scatter = ax.scatter([], [], color=[], zorder=2)
 
@@ -185,7 +185,7 @@ def parallel_anomaly_detection(data_stream):
 
     for index, data_point in enumerate(data_stream):
         # Update the rolling window with the new data point
-        data_window.append(data_point)
+        data_points_list.append(data_point)
         x_data.append(index)
 
         # Anomaly detection using rolling Z-score
@@ -204,7 +204,7 @@ def parallel_anomaly_detection(data_stream):
         color_window.append('red' if is_anomaly else 'blue')
 
         # Update the plot with new data and color window
-        update_dynamic_plot(data_window, color_window, x_data, line, scatter, ax)
+        update_dynamic_plot(data_points_list, color_window, x_data, line, scatter, ax)
 
 
     print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
