@@ -53,7 +53,7 @@ def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_a
         data_point = regular_pattern + seasonal_component + noise
         
         # Randomly inject an anomaly with probability of 5%
-        if count > 70 and random.random() < 0.05:
+        if count > 110 and random.random() < 0.05:
             anomaly_magnitude = random.uniform(10, 20)  # Randomly generate the magnitude of the anomaly between 10 and 20 units
             data_point += anomaly_magnitude * random.choice([-1, 1])  # Randomly inject positive or negative anomalies
         
@@ -256,7 +256,7 @@ def parallel_anomaly_detection(data_stream):
     """
     
     # Set key parameters for anomaly detection
-    rolling_window_size = 70  # Size of the rolling window for rolling z-score anomaly detection
+    rolling_window_size = 100  # Size of the rolling window for rolling z-score anomaly detection
     buffer_size = 100  # Number of data points to buffer for Isolation Forest
     z_threshold = 2.5  # Z-score threshold for detecting anomalies for rolling z-score anomaly detection
 
