@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 def data_stream_generator(max_data_points):
     '''
-    * TODO
+     TODO
     '''
 
     count = 0
@@ -38,20 +38,9 @@ def data_stream_generator(max_data_points):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 def initialize_real_time_plot(window_size):
     """
-    Initializes a real-time plot with a specific window size.
+     Initializes a real-time plot with a specific window size.
     """
     plt.ion()  # Enable interactive mode
     
@@ -65,9 +54,10 @@ def initialize_real_time_plot(window_size):
     return fig, ax, line, data_window, x_data
 
 
+
 def update_plot(data_window, color_window, x_data, line, scatter):
     """
-    Updates the real-time plot with the new data value and color.
+     Updates the real-time plot with the new data value and color.
     """
     # Update the line plot
     line.set_ydata(data_window)
@@ -81,85 +71,41 @@ def update_plot(data_window, color_window, x_data, line, scatter):
 
 
 
+def rolling_z_score_anomaly_detection(data_point, window, window_size, z_threshold):    #* index
+    '''
+     TODO
+    '''
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-* TODO
-'''
-def rolling_z_score_anomaly_detection(data_point, window, window_size, z_threshold):    #index
-    # Append new data point to the window
     window.append(data_point)
 
     if len(window) == window_size:
-        # Calculate mean and standard deviation of the window
-        mean = np.mean(window)
-        std_dev = np.std(window)
+        mean = np.mean(window)  # Calculate mean of the window
+        std_dev = np.std(window)    # Calculate standard deviation of the window
         
         # Avoid division by zero
         if std_dev == 0:
             z_score = 0
         else:
             z_score = (data_point - mean) / std_dev   # Calculate z-score
-        
         # print(f"Index: {i}, Data point: {data_point}, Rolling mean: {mean}, Std dev: {std_dev}, Z-score: {z_score}")
 
-        # Check if z-score exceeds the threshold (absolute value)
         if abs(z_score) > z_threshold:
             # print(f"\n Anomaly detected at index {index}: z_score = {z_score}\n")
-            # return index
             return True
     
     return False
-    # return None
-    # return data_points, z_scores, anomalies, rolling_means, rolling_stds
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-* TODO
-'''
 def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size):  #* index
-    anomaly_indices = []
-
+    '''
+     TODO
+    '''
+    
     data_buffer.append([data_point])  # Add new data point to the buffer
 
-    # Check if buffer is full
-    if len(data_buffer) >= buffer_size:
-        # Apply Isolation Forest to detect anomalies in the buffer
-        iso_forest.fit(data_buffer)  # Fit the model to the buffer
-        anomaly_labels = iso_forest.predict(data_buffer)  # Predict anomalies
+    if len(data_buffer) >= buffer_size:    
+        anomaly_labels = iso_forest.fit_predict(data_buffer)  # Fit the model to the buffer & predict anomalies
 
         if anomaly_labels[-1] == -1:  # Check if the latest data point is an anomaly
             return True
@@ -178,9 +124,6 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
 
 # TODO: 
-
-
-
 def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
     """
     Runs both anomaly detection algorithms in parallel and updates the plot in real time.
@@ -224,8 +167,7 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
         # Update the plot with new data and color window
         update_plot(data_window, color_window, x_data, line, scatter)
 
-    
-    print("Filtered combined anomalies:", anomalies)
+    print("Detected anomalies:", anomalies)
 
     
 
@@ -240,43 +182,6 @@ def main():
 
     plt.ioff()  # Turn off interactive mode when done
     plt.show()  # Display the final plot
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
