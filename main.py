@@ -71,7 +71,7 @@ def update_plot(data_window, color_window, x_data, line, scatter):
 
 
 
-def rolling_z_score_anomaly_detection(data_point, window, window_size, z_threshold):    #TODO: index
+def rolling_z_score_anomaly_detection(data_point, window, window_size, z_threshold):
     '''
      TODO
     '''
@@ -97,7 +97,7 @@ def rolling_z_score_anomaly_detection(data_point, window, window_size, z_thresho
 
 
 
-def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size):  # TODO index
+def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size):
     '''
      TODO
     '''
