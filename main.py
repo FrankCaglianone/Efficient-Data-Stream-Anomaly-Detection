@@ -66,7 +66,7 @@ def initialize_dynamic_plot():
     """
     plt.ion()  # Enable interactive mode
     fig, ax = plt.subplots(figsize=(10, 6))  # Create a new figure and axis
-    data_points_list = []  # Initialize an empty data window (grows over time)
+    data_points_list = []  # Initialize an empty data list (grows over time)
     x_data = []  # Initialize an empty x-axis data array (grows over time)
     line, = ax.plot([], [], color='blue', zorder=1)  # Create an empty line plot with blue color and zorder=1 (sets its layering below scatter points)
 
@@ -165,7 +165,6 @@ def parallel_anomaly_detection(data_stream):
      TODO: Runs both anomaly detection algorithms in parallel and updates the plot in real time.
     """
     # Initialize variables
-    plot_window_size=500
     rolling_window_size=70
     buffer_size = 100
     z_threshold = 3
@@ -175,7 +174,7 @@ def parallel_anomaly_detection(data_stream):
  
     # Initialize plot
     fig, ax, line, data_points_list, x_data = initialize_dynamic_plot()
-    color_list = []  # Initialize an empty color window
+    color_list = []  # Initialize an empty color list
     scatter = ax.scatter([], [], color=[], zorder=2)
 
     # TODO: Anomalies Comment
@@ -184,7 +183,7 @@ def parallel_anomaly_detection(data_stream):
     all_anomalies = []
 
     for index, data_point in enumerate(data_stream):
-        # Update the rolling window with the new data point
+        
         data_points_list.append(data_point)
         x_data.append(index)
 
@@ -200,10 +199,10 @@ def parallel_anomaly_detection(data_stream):
         is_anomaly = z_anomaly or iso_anomaly
         if is_anomaly: all_anomalies.append(index)
 
-       # Update color window: red for anomaly, blue for normal
+       # Update color list: red for anomaly, blue for normal
         color_list.append('red' if is_anomaly else 'blue')
 
-        # Update the plot with new data and color window
+        # Update the plot with new data
         update_dynamic_plot(data_points_list, color_list, x_data, line, scatter, ax)
 
 
@@ -230,9 +229,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-#* Note Sliding Window: Instead of clearing the entire buffer after each detection round, we now implement a sliding window approach by keeping most of the buffer (removing only step_size points) to preserve the recent history of the data stream.
-
-
