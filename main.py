@@ -1,12 +1,9 @@
 import time
 import random
-import math
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from collections import deque
 import matplotlib.pyplot as plt
-
-
 
 
 
@@ -135,7 +132,6 @@ def parallel_anomaly_detection(data_stream):
     data_buffer = []
     iso_forest = IsolationForest(contamination=0.08, random_state=42)
  
-
     # Initialize plot
     fig, ax, line, data_window, x_data = initialize_real_time_plot(window_size=plot_window_size)
     color_window = ['blue'] * plot_window_size  # Color window for dynamic color updates
