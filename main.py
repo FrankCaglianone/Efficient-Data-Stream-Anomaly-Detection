@@ -49,7 +49,7 @@ def data_stream_generator(max_data_points):
 
 
 
-def initialize_real_time_plot(window_size=50):
+def initialize_real_time_plot(window_size):
     """
     Initializes a real-time plot with a specific window size.
     """
@@ -150,7 +150,7 @@ def rolling_z_score_anomaly_detection(data_point, window, window_size, z_thresho
 '''
 * TODO
 '''
-def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size):  #* step_size, index
+def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size):  #* index
     anomaly_indices = []
 
     data_buffer.append([data_point])  # Add new data point to the buffer
@@ -163,15 +163,7 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
         if anomaly_labels[-1] == -1:  # Check if the latest data point is an anomaly
             return True
-
-        # # Find indices of anomalies in the current buffer
-        # anomalies = np.where(anomaly_labels == -1)[0]
-        # anomaly_indices.extend(anomalies + (index - buffer_size + 1))  # Adjust indices
-
-        # # Clear the buffer after processing
-        # data_buffer = data_buffer[step_size:]
-
-    # return anomaly_indices, data_buffer
+        
     return False
 
 
@@ -185,7 +177,7 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
 
 
-
+# TODO: 
 
 
 
@@ -297,94 +289,36 @@ def main():
 
 
 
-# def parallel_anomaly_detection(data_stream, visualization_window, visualization_line):
-#     # Variables
-#     buffer_size = 50
-#     window_size = 10
+def tmp(data_stream, visualization_window, visualization_line):
+    # Variables
+    buffer_size = 50
+    window_size = 10
 
-#     # Create fixed-size window for rolling Z-Score
-#     window = deque(maxlen=window_size)
-
-#     # Buffer for Isolation Forest
-#     data_buffer = []
-#     iso_forest = IsolationForest(contamination=0.08, random_state=42)
-
-#     # Anomalies
-#     z_score_anomalies = []
-#     iso_anomalies = []
-
-#     # Save Data Points
-#     data_points = []
-
-#     for index, data_point in enumerate(data_stream):
-#         # TODO: !!!!!! Update the real-time plot with the new data point
-#         update_plot(data_point, visualization_window, visualization_line)
-
-#         # Run both anomaly detection algorithms in parallel
-#         z_tmp = rolling_z_score_anomaly_detection(data_point=data_point, index=index, window=window, window_size=window_size, z_threshold=2)
-#         if z_tmp is not None:
-#             z_score_anomalies.append(z_tmp)
-
-        
-#         iso_tmp, data_buffer = isolation_forest_anomaly_detection(iso_forest=iso_forest, data_point=data_point, index =index, data_buffer=data_buffer, buffer_size=buffer_size, step_size=10)
-#         if iso_tmp:
-#             iso_anomalies.extend(iso_tmp)
-#         # Fit the Isolation Forest model periodically
-#         if len(data_buffer) == buffer_size:
-#             iso_forest.fit(data_buffer)
-
-#         data_points.append(data_point)
+    # Create fixed-size window for rolling Z-Score
+    window = deque(maxlen=window_size)
 
 
-#     print('\n\n')
-#     # print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
-#     # print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
 
-#     # combined_anomalies = set(z_score_anomalies) & set(iso_anomalies)
-#     # print("All detected anomalies:", combined_anomalies)
-
-#     # Combining anomalies using union instead of intersection
-#     combined_anomalies = set(z_score_anomalies) | set(iso_anomalies)
-
-#     # Additional filter: If the anomaly is only detected by one method, check if it is near another anomaly
-#     # TODO: Anomaly Clustering
-#     final_anomalies = set()
-#     for anomaly in combined_anomalies:
-#         # If an anomaly is detected by both methods, add immediately.
-#         if anomaly in z_score_anomalies and anomaly in iso_anomalies:
-#             final_anomalies.add(anomaly)
-#         elif any(abs(anomaly - a) <= 5 for a in combined_anomalies if a != anomaly):
-#             final_anomalies.add(anomaly)
-
-#     print("Filtered combined anomalies:", final_anomalies)
+    
+    z_score_anomalies = []
+    iso_anomalies = []
+    data_points = []
 
 
-#     return data_points, combined_anomalies
+    # print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
+    # print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
+
+    # combined_anomalies = set(z_score_anomalies) & set(iso_anomalies)
+    # print("All detected anomalies:", combined_anomalies)
+
+    # Combining anomalies using union instead of intersection
+    combined_anomalies = set(z_score_anomalies) | set(iso_anomalies)
+    print("Filtered combined anomalies:", combined_anomalies)
 
 
 
 
 
-
-
-
-
-
-# def main():
-#     # Create the data stream generator
-#     data_stream = data_stream_generator(500)
-
-
-#     # Initialize the real-time plot
-#     fig, ax, line, data_window, x_data = initialize_real_time_plot(window_size=200)
-
-
-#     # Run the parallel anomaly detection
-#     data_points, anomalies_detected = parallel_anomaly_detection(data_stream, data_window, line)
-
-
-#     plt.ioff()  # Turn off interactive mode when done
-#     plt.show()  # Display the final plot
 
 
 
