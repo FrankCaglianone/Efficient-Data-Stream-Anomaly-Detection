@@ -8,14 +8,30 @@ import matplotlib.pyplot as plt
 
 
 
-def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_amplitude=0.5, seasonal_frequency=0.1, sleep_time=0.1):    
+def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_amplitude=0.5, seasonal_frequency=0.1, sleep_time=0.1):
+    """
+        Simulates a real-time data stream by generating data points with regular patterns, 
+        seasonal component, and random noise. It occasionally injects anomalies.
+        
+        Args:
+            amplitude (float): Amplitude of the regular sine wave pattern.
+            frequency (float): Frequency of the regular sine wave pattern.
+            noise_scale (float): Scale of random noise added to the data.
+            seasonal_amplitude (float): Amplitude of the seasonal component (cosine wave).
+            seasonal_frequency (float): Frequency of the seasonal component.
+            sleep_time (float): Time to sleep between each data point to simulate real-time data streaming.
+        
+        Yields:
+            float: A simulated data point with noise and occasional anomalies.
+    """ 
+
     t = 0
     count = 0
     while True:
-        # Generate the regular pattern (sine wave)
+        # Generate the regular pattern using a sine wave
         regular_pattern = amplitude * np.sin(2 * np.pi * frequency * t)
         
-        # Add the seasonal component (cosine wave)
+        # Add the seasonal component a cosine wave
         seasonal_component = seasonal_amplitude * np.cos(2 * np.pi * seasonal_frequency * t)
         
         # Add random noise (Gaussian distribution)
@@ -24,12 +40,10 @@ def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_a
         # Combine all components to create the data point
         data_point = regular_pattern + seasonal_component + noise
         
-        # Inject an anomaly every 'anomaly_interval' data points
-        # Randomly inject an anomaly with probability anomaly_chance
+        # Randomly inject an anomaly with probability of 5%
         if count > 70 and random.random() < 0.05:
-            anomaly_magnitude = random.uniform(10, 20)
+            anomaly_magnitude = random.uniform(10, 20)  # Randomly generate the magnitude of the anomaly between 10 and 20 units
             data_point += anomaly_magnitude * random.choice([-1, 1])  # Randomly inject positive or negative anomalies
-            # print(f"Anomaly introduced at {count} --> {data_point}")
         
         # Yield the generated data point
         yield data_point
