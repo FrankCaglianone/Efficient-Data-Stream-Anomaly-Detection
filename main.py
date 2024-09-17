@@ -1,8 +1,9 @@
 import time
 import random
+from collections import deque
+
 import numpy as np
 from sklearn.ensemble import IsolationForest
-from collections import deque
 import matplotlib.pyplot as plt
 
 
