@@ -213,10 +213,8 @@ def handle_concept_drift(data_point, recent_data, window_size, drift_threshold, 
     drift_detected = concept_drift_detection(data_point, recent_data, window_size, drift_threshold)
 
     if drift_detected:
-        print("Concept drift detected! Retraining Isolation Forest...")
         if len(recent_data) >= window_size:
             iso_forest.fit(np.array(recent_data).reshape(-1, 1))    # Train Isolation Forest on most recent data
-            print("Model retrained.")
 
 
 
