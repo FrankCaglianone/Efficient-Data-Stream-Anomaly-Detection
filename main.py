@@ -25,7 +25,7 @@ def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_a
             float: A simulated data point with noise and occasional anomalies.
     """ 
 
-    t = 0
+    t = 0 # TODO
     count = 0
     while True:
         # Generate the regular pattern using a sine wave
@@ -161,8 +161,16 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
 def parallel_anomaly_detection(data_stream):
     """
-     TODO: Runs both anomaly detection algorithms in parallel and updates the plot in real time.
+        Runs both anomaly detection algorithms (Rolling z-score and Isolation Fores) in parallel, 
+        while updating a dynamic real-time plot.
+        
+        Args:
+            data_stream (generator): A generator that provides a real-time stream of data points.
+        
+        Displays:
+            A real-time plot of the data stream, highlighting anomalies in red.
     """
+    
     # Initialize variables
     rolling_window_size=70
     buffer_size = 100
@@ -171,14 +179,12 @@ def parallel_anomaly_detection(data_stream):
     data_buffer = deque(maxlen=buffer_size)
     iso_forest = IsolationForest(contamination=0.05, n_estimators=150, random_state=42)
  
-    # Initialize plot
+    # Initialize dynamic plot
     fig, ax, line, data_points_list, x_data_list = initialize_dynamic_plot()
     color_list = []  # Initialize an empty color list
     scatter = ax.scatter([], [], color=[], zorder=2)
 
     # TODO: Anomalies Comment
-    z_score_anomalies = []
-    iso_anomalies = []
     all_anomalies = []
 
     for index, data_point in enumerate(data_stream):
@@ -188,11 +194,9 @@ def parallel_anomaly_detection(data_stream):
 
         # Anomaly detection using rolling Z-score
         z_anomaly = rolling_z_score_anomaly_detection(data_point, window, rolling_window_size, z_threshold)
-        if z_anomaly: z_score_anomalies.append(index)
 
         # Anomaly detection using Isolation Forest
         iso_anomaly = isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size)
-        if iso_anomaly : iso_anomalies.append(index)
 
         # Determine if it's an anomaly (detected by either method)
         is_anomaly = z_anomaly or iso_anomaly
@@ -204,9 +208,6 @@ def parallel_anomaly_detection(data_stream):
         # Update the plot with new data
         update_dynamic_plot(data_points_list, color_list, x_data_list, line, scatter, ax)
 
-
-    print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
-    print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
     print("Detected anomalies:", all_anomalies)
 
 
