@@ -57,34 +57,49 @@ def data_stream_simulation(amplitude=1, frequency=1, noise_scale=0.1, seasonal_a
 
 
 
-def initialize_real_time_plot(window_size):
+def initialize_dynamic_plot():
     """
-     TODO
+    Initializes a real-time dynamic plot without a fixed window size.
+    
+    Returns:
+        tuple: Figure, axis, line plot, data_window list, and initial x-axis data array.
     """
     plt.ion()  # Enable interactive mode
-    
     fig, ax = plt.subplots(figsize=(10, 6))  # Create a new figure and axis
-    data_window = deque([0] * window_size, maxlen=window_size)  # Data window
-    x_data = np.linspace(0, window_size - 1, window_size)  # X-axis for data points
-    line, = ax.plot(x_data, data_window, color='blue', zorder=1)  # Line object
+    data_window = []  # Initialize an empty data window (grows over time)
+    x_data = []  # Initialize an empty x-axis data array (grows over time)
+    line, = ax.plot([], [], color='blue', zorder=1)  # Create an empty line plot
 
-    ax.set_ylim((-25, 25))  # Set y-axis limits
+    ax.set_ylim((-25, 25))  # Set initial y-axis limits
+    ax.set_xlim((0, 200))  # Set initial x-axis limits (we'll update this later)
 
     return fig, ax, line, data_window, x_data
 
 
-
-def update_plot(data_window, color_window, x_data, line, scatter):
+def update_dynamic_plot(data_window, color_window, x_data, line, scatter, ax):
     """
-     TODO
-    """
-    # Update the line plot
-    line.set_ydata(data_window)
+    Updates the real-time plot with new data and dynamically extends the x-axis when needed.
     
-    # Update the scatter plot for anomalies
+    Args:
+        data_window (list): A list of data points to be plotted.
+        color_window (list): A list of colors for each data point (red for anomaly, blue for normal).
+        x_data (list): The x-axis data points, grows as more data is added.
+        line (Line2D): The line object for the regular data plot.
+        scatter (PathCollection): The scatter object for anomaly visualization.
+        ax (Axes): The axis object to update the x-axis limits.
+    """
+    # Update the line plot with new data
+    line.set_ydata(data_window)
+    line.set_xdata(x_data)
+
+    # Update the scatter plot with the same new data and colors
     scatter.set_offsets(np.c_[x_data, data_window])
     scatter.set_color(color_window)
-    
+
+    # Dynamically extend the x-axis when needed
+    if len(x_data) > ax.get_xlim()[1]:
+        ax.set_xlim(0, len(x_data) + 100)  # Extend the x-axis by 100 more data points
+
     plt.draw()
     plt.pause(0.01)
 
@@ -159,9 +174,9 @@ def parallel_anomaly_detection(data_stream):
     iso_forest = IsolationForest(contamination=0.05, n_estimators=150, random_state=42)
  
     # Initialize plot
-    fig, ax, line, data_window, x_data = initialize_real_time_plot(window_size=plot_window_size)
-    color_window = ['blue'] * plot_window_size  # Color window for dynamic color updates
-    scatter = ax.scatter(x_data, data_window, color=color_window, zorder=2)  # Scatter plot for color changes
+    fig, ax, line, data_window, x_data = initialize_dynamic_plot()
+    color_window = []  # Initialize an empty color window
+    scatter = ax.scatter([], [], color=[], zorder=2)
 
     # TODO: Anomalies Comment
     z_score_anomalies = []
@@ -171,6 +186,7 @@ def parallel_anomaly_detection(data_stream):
     for index, data_point in enumerate(data_stream):
         # Update the rolling window with the new data point
         data_window.append(data_point)
+        x_data.append(index)
 
         # Anomaly detection using rolling Z-score
         z_anomaly = rolling_z_score_anomaly_detection(data_point, window, rolling_window_size, z_threshold)
@@ -184,13 +200,12 @@ def parallel_anomaly_detection(data_stream):
         is_anomaly = z_anomaly or iso_anomaly
         if is_anomaly: all_anomalies.append(index)
 
-        # Update color window: red for anomaly, blue for normal
+       # Update color window: red for anomaly, blue for normal
         color_window.append('red' if is_anomaly else 'blue')
-        if len(color_window) > plot_window_size:
-            color_window.pop(0)  # Keep the color window in sync with data
 
         # Update the plot with new data and color window
-        update_plot(data_window, color_window, x_data, line, scatter)
+        update_dynamic_plot(data_window, color_window, x_data, line, scatter, ax)
+
 
     print("Anomalies found with Rolling Z-Score at indices:", z_score_anomalies)
     print("Anomalies found with Forest Isolation at indices:", sorted(list(set(iso_anomalies))))
