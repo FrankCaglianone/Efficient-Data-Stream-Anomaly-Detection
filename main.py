@@ -71,7 +71,7 @@ def update_plot(data_window, color_window, x_data, line, scatter):
 
 
 
-def rolling_z_score_anomaly_detection(data_point, window, window_size, z_threshold):    #* index
+def rolling_z_score_anomaly_detection(data_point, window, window_size, z_threshold):    #TODO: index
     '''
      TODO
     '''
@@ -97,7 +97,7 @@ def rolling_z_score_anomaly_detection(data_point, window, window_size, z_thresho
 
 
 
-def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size):  #* index
+def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buffer_size):  # TODO index
     '''
      TODO
     '''
@@ -116,8 +116,8 @@ def isolation_forest_anomaly_detection(iso_forest, data_point, data_buffer, buff
 
 
 
-# TODO buffer_size = 50
-def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
+
+def parallel_anomaly_detection(data_stream, window_size):
     """
     Runs both anomaly detection algorithms in parallel and updates the plot in real time.
     """
@@ -125,6 +125,7 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
     window = deque(maxlen=window_size)
     data_buffer = []
     iso_forest = IsolationForest(contamination=0.08, random_state=42)
+    buffer_size = 50
     z_threshold = 2
 
     # Initialize plot
@@ -132,7 +133,7 @@ def parallel_anomaly_detection(data_stream, window_size, buffer_size=50):
     color_window = ['blue'] * window_size  # Color window for dynamic color updates
     scatter = ax.scatter(x_data, data_window, color=color_window, zorder=2)  # Scatter plot for color changes
 
-    # TODO: Anomalies
+    # TODO: Anomalies Comment
     z_score_anomalies = []
     iso_anomalies = []
     all_anomalies = []
