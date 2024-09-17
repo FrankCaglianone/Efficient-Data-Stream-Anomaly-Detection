@@ -33,16 +33,17 @@ By combining both methods the system can detect both the sudden, obvious spikes 
 ### 1. **Rolling Z-Score**
 - **How it works**: This method calculates the z-score for each data point using a sliding window of recent data. If the z-score exceeds a predefined threshold, the data point is flagged as anomalous.
 
-<!-- - **Parameters**:
-  - `window_size`: The size of the sliding window for calculating the z-score.
-  - `z_threshold`: The z-score threshold for detecting anomalies. -->
+- **Parameters**:
+  - `window_size`: The size of the sliding window that stores the recent data points.
+  - `z_threshold`: The z-score threshold for detecting anomalies.
 
 ### 2. **Isolation Forest**
 - **How it works**: Isolation Forest is an unsupervised machine learning algorithm that isolates anomalies by recursively partitioning the data. Anomalies are easier to isolate and tend to appear in shorter paths within the tree structure of the forest.
 
-<!-- - **Parameters**:
+- **Parameters**:
   - `contamination`: The expected proportion of anomalies in the data.
-  - `n_estimators`: The number of trees in the forest. -->
+  - `n_estimators`: The number of trees in the forest.
+  - `buffer_size`: The size of the buffer that stores the recent data points.
 
 
 
