@@ -1,8 +1,3 @@
-![Project Screenshot](images/fig_1.png)
-![Project Screenshot](images/fig_2.png)
-
-
-
 # Efficient Real-Time Data Stream Anomaly Detection
 This project implements a real-time anomaly detection system using two complementary methods: 
 - **Rolling Z-Score**
@@ -108,3 +103,13 @@ The data stream consists of:
 3. You can stop the program at any time by pressing `ctrl+c`. This will gracefully shut down the live plot and display the final state of the plot before the program exits.
 
 
+
+
+
+
+
+# Images
+### Project Screenshot
+![Project Screenshot](images/fig_1.png)
+### Project Accuracy
+![Project Screenshot](images/fig_2.png)
