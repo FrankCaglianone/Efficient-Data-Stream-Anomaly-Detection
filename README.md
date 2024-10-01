@@ -1,3 +1,8 @@
+![Project Screenshot](images/fig_1.png)
+![Project Screenshot](images/fig_2.png)
+
+
+
 # Efficient Real-Time Data Stream Anomaly Detection
 This project implements a real-time anomaly detection system using two complementary methods: 
 - **Rolling Z-Score**
