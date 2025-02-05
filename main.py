@@ -302,7 +302,10 @@ def parallel_anomaly_detection(data_stream):
 
         # Determine if it's an anomaly (detected by either method)
         is_anomaly = z_anomaly or iso_anomaly
-        if is_anomaly: all_anomalies.append(index)
+        if is_anomaly: 
+            all_anomalies.append(index)
+            
+            print("Anomaly Detected: ", float(index))
 
         # Update color list: red for anomaly, blue for normal
         color_list.append('red' if is_anomaly else 'blue')
