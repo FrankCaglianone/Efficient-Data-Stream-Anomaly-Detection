@@ -113,3 +113,13 @@ The data stream consists of:
 ![Project Screenshot](images/fig_1.png)
 ### Project Accuracy
 ![Project Screenshot](images/fig_2.png)
+
+
+
+
+
+
+
+
+## License
+This project is licensed under the MIT License - see the [MIT LICENSE](LICENSE) file for details.
